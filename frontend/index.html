@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Deepfake Detection Tool</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>AI Deepfake Detection Tool</h1>
+        <p>Verify the authenticity of images and audio files</p>
+    </header>
+
+    <section id="upload-section">
+        <h2>Upload Media</h2>
+
+        <label>
+            <input type="radio" name="mediaType" value="image" checked>
+            Image
+        </label>
+
+        <label>
+            <input type="radio" name="mediaType" value="audio">
+            Audio
+        </label>
+
+        <br><br>
+
+        <input type="file" id="fileInput">
+
+        <br><br>
+
+        <button id="detectBtn" onclick="detect()">Detect</button>
+    </section>
+
+    <section id="result-section">
+        <h2>Result</h2>
+
+        <p><strong>Status</strong></p>
+
+        <div id="progress-container">
+            <div id="progress-bar">0%</div>
+        </div>
+
+        <p><strong>Verdict:</strong> <span id="verdict">—</span></p>
+        <p><strong>Confidence:</strong> <span id="confidence">—</span></p>
+        <p><strong>Explanation:</strong> <span id="explanation">—</span></p>
+    </section>
+
+    <footer>
+        <p>For demonstration purposes only</p>
+    </footer>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
