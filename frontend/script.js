@@ -1,29 +1,22 @@
 function detect() {
-    const fileInput = document.getElementById("fileInput");
-    const detectBtn = document.getElementById("detectBtn");
-    const progressBar = document.getElementById("progress-bar");
-    const verdict = document.getElementById("verdict");
-    const confidence = document.getElementById("confidence");
-    const explanation = document.getElementById("explanation");
-
+    
+    const fileInput = document.getElementById("fileInput");      
+    const detectBtn = document.getElementById("detectBtn");      
+    const progressBar = document.getElementById("progress-bar"); 
+    const verdict = document.getElementById("verdict");          
+    const confidence = document.getElementById("confidence");    
+    const explanation = document.getElementById("explanation");  
     if (fileInput.files.length === 0) {
-        alert("Please select a file before clicking Detect.");
+        alert("Please select an image file first.");
         return;
     }
 
     const file = fileInput.files[0];
-    const mediaType = document.querySelector('input[name="mediaType"]:checked').value;
 
-    if (mediaType === "image" && !file.type.startsWith("image/")) {
-        alert("Please upload a valid image file.");
+    if (!file.type.startsWith("image/")) {
+        alert("Only image files are supported right now.");
         return;
     }
-
-    if (mediaType === "audio" && !file.type.startsWith("audio/")) {
-        alert("Please upload a valid audio file.");
-        return;
-    }
-
     detectBtn.disabled = true;
     detectBtn.innerText = "Processing...";
 
@@ -36,20 +29,53 @@ function detect() {
     progressBar.innerText = "0%";
 
     const interval = setInterval(() => {
-        progress += 10;
-        progressBar.style.width = progress + "%";
-        progressBar.innerText = progress + "%";
-
-        if (progress >= 100) {
-            clearInterval(interval);
-
-            verdict.innerText = "Likely Deepfake";
-            confidence.innerText = "82%";
-            explanation.innerText = "Detected spectral inconsistencies";
-
-            detectBtn.disabled = false;
-            detectBtn.innerText = "Detect";
+        if (progress < 90) {
+            progress += 10;
+            progressBar.style.width = progress + "%";
+            progressBar.innerText = progress + "%";
         }
-    }, 300);
-}
+    }, 200);
 
+    const formData = new FormData();
+    formData.append("file", file); 
+
+    
+    fetch("http://127.0.0.1:5000/detect", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Backend error");
+        }
+        return response.json();
+    })
+    .then(data => {
+        
+        clearInterval(interval);
+
+        
+        progressBar.style.width = "100%";
+        progressBar.innerText = "100%";
+
+        
+        verdict.innerText = data.verdict;
+        confidence.innerText = (data.confidence * 100).toFixed(2) + "%";
+        explanation.innerText = data.explanation;
+
+        detectBtn.disabled = false;
+        detectBtn.innerText = "Detect";
+    })
+    .catch(error => {
+        clearInterval(interval);
+
+        verdict.innerText = "Error";
+        confidence.innerText = "—";
+        explanation.innerText = "Could not connect to backend";
+
+        detectBtn.disabled = false;
+        detectBtn.innerText = "Detect";
+
+        console.error("Detection failed:", error);
+    });
+}
