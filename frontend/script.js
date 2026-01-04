@@ -40,7 +40,13 @@ function detect() {
     formData.append("file", file); 
 
     
-    fetch("http://127.0.0.1:5000/detect", {
+    const endpoint =
+    mediaType === "audio"
+        ? "http://127.0.0.1:5000/detect-audio"
+        : "http://127.0.0.1:5000/detect";
+
+    fetch(endpoint, {
+
         method: "POST",
         body: formData
     })
